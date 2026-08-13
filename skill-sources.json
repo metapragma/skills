@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "skills": {
+    "ask-matt": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/ask-matt", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "code-review": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/code-review", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "codebase-design": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/codebase-design", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "diagnosing-bugs": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/diagnosing-bugs", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "domain-modeling": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/domain-modeling", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "grill-me": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/productivity/grill-me", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "grill-with-docs": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/grill-with-docs", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "grilling": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/productivity/grilling", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "handoff": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/productivity/handoff", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "implement": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/implement", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "improve-codebase-architecture": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/improve-codebase-architecture", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "prototype": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/prototype", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "research": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/research", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "resolving-merge-conflicts": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/resolving-merge-conflicts", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "setup-matt-pocock-skills": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/setup-matt-pocock-skills", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "tdd": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/tdd", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "teach": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/productivity/teach", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "to-questionnaire": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/productivity/to-questionnaire", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "to-spec": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/to-spec", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "to-tickets": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/to-tickets", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "triage": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/triage", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "wait-what": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/productivity/wait-what", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "wayfinder": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/wayfinder", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "wizard": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/engineering/wizard", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" },
+    "writing-for-agents": { "repository": "https://github.com/mattpocock/skills.git", "path": "skills/productivity/writing-for-agents", "ref": "main", "commit": "8b78b531ab965735c5dc74f6f7a219e1e37326df", "mode": "tracked" }
+  }
+}
+
