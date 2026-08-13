@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Integration Handoff"
+  short_description: "Document backend changes for frontend integration"
+  default_prompt: "Use $frontend-integration-handoff to document this backend feature for frontend integration."

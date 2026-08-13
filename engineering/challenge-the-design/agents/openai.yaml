@@ -1,0 +1,4 @@
+interface:
+  display_name: "Challenge the Design"
+  short_description: "Reframe, stress-test, and synthesize a design"
+  default_prompt: "Use $challenge-the-design to find, challenge, and synthesize the best long-term design for this proposal."
