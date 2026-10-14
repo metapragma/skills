@@ -1,6 +1,10 @@
 # ADR Format
 
-ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
+Follow the configured ADR location, format, numbering, and approval process. The defaults below
+apply only when no convention exists. Record proposals as drafts until the required approval;
+preserve accepted and superseded status when reading existing decisions.
+
+By default, ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
 
 Create the `docs/adr/` directory lazily — only when the first ADR is needed.
 
@@ -24,7 +28,8 @@ Only include these when they add genuine value. Most ADRs won't need them.
 
 ## Numbering
 
-Scan `docs/adr/` for the highest existing number and increment by one.
+Scan the configured ADR directory for the highest existing number and increment by one when the
+project uses sequential numbering.
 
 ## When to offer an ADR
 

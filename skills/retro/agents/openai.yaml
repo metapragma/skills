@@ -1,0 +1,5 @@
+interface:
+  display_name: "Retrospective"
+  short_description: "Find evidence-backed improvements after a session"
+policy:
+  allow_implicit_invocation: false

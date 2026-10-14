@@ -1,5 +1,9 @@
 # CONTEXT.md Format
 
+Fallback format for a new glossary when the project has no established convention. Resolve
+`docs/agents/domain.md` and repository instructions first. Preserve existing filenames, formats,
+combined domain documents, and approval rules; an index named `CONTEXT.md` is not a glossary.
+
 ## Structure
 
 ```md
@@ -51,10 +55,10 @@ _Avoid_: Client, buyer, account
 - **Ordering ↔ Billing**: Shared types for `CustomerId` and `Money`
 ```
 
-The skill infers which structure applies:
+For a project without an existing convention, infer which structure applies:
 
 - If `CONTEXT-MAP.md` exists, read it to find contexts
 - If only a root `CONTEXT.md` exists, single context
-- If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved
+- If neither exists and no other glossary is defined, create a root `CONTEXT.md` lazily when the first domain edit is authorized
 
 When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.

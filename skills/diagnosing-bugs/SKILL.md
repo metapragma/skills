@@ -46,6 +46,22 @@ Treat the loop as a product. Once you have _a_ loop, **tighten** it:
 
 A 30-second flaky loop is barely better than no loop; a 2-second deterministic one is tight — a debugging superpower.
 
+### Performance measurements
+
+Before treating a timing as a regression or improvement, define the measured
+operation and completion signal. Confirm the intended work ran and produced
+correct results; record errors, timeouts, cache effects, and skipped work rather
+than letting less work look faster. Compare baseline and candidate with equivalent
+inputs, configuration, load, and relevant warm-up conditions.
+
+Keep the command, target versions, environment, sample count, and spread with the
+results. Repeat enough to assess variability for the decision at hand; if the
+gap cannot be distinguished from noise, report it as inconclusive. For a causal
+claim, use profiles or counters to identify the limiting resource or code path,
+including limits in the measurement harness. Without that evidence, keep the
+observed difference separate from its suspected explanation. A faster isolated
+step does not establish a faster user workflow; check the scope of the claim.
+
 ### Non-deterministic bugs
 
 The goal is not a clean repro but a **higher reproduction rate**. Loop the trigger 100×, parallelise, add stress, narrow timing windows, inject sleeps. A 50%-flake bug is debuggable; 1% is not — keep raising the rate until it's debuggable.
@@ -109,7 +125,7 @@ Tool preference:
 
 **Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
 
-**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
+**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second. Apply the Phase 1 measurement checks to both baseline and candidate before interpreting the difference.
 
 ## Phase 5 — Fix + regression test
 
@@ -137,4 +153,4 @@ Required before declaring done:
 - [ ] Throwaway prototypes deleted (or moved to a clearly-marked debug location)
 - [ ] The hypothesis that turned out correct is stated in the commit / PR message — so the next debugger learns
 
-**Then ask: what would have prevented this bug?** If the answer involves architectural change (no good test seam, tangled callers, hidden coupling) hand off to the `/improve-codebase-architecture` skill with the specifics. Make the recommendation **after** the fix is in, not before — you have more information now than when you started.
+**Then ask: what would have prevented this bug?** If the answer involves architectural change (no good test seam, tangled callers, hidden coupling), recommend that the user invoke `improve-codebase-architecture` with the specifics; do not launch it automatically. Make the recommendation **after** the fix is in, not before — you have more information now than when you started.

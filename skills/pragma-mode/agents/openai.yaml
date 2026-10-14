@@ -1,0 +1,5 @@
+interface:
+  display_name: "Pragma Mode"
+  short_description: "Run a task through a matched playbook"
+policy:
+  allow_implicit_invocation: false

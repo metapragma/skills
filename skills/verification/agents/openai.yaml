@@ -1,0 +1,5 @@
+interface:
+  display_name: "Verification"
+  short_description: "Run, set up, or audit a codebase's verification paths"
+policy:
+  allow_implicit_invocation: true

@@ -64,6 +64,36 @@ When designing an interface, ask:
 - **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is probably the wrong shape.
 - **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a seam unless something actually varies across it.
 
+## Reader Load
+
+Assess both the layers a reader must trace and the mutable state they must hold
+in mind. A flat implementation with hidden state can be as difficult to follow
+as a chain of pass-through modules. Ask where a value comes from, who can change
+it, and which ordering assumptions make it valid.
+
+Remove indirection only when it costs more understanding than it saves. Preserve
+modules that hide meaningful policy, invariants, compatibility, or substitution;
+one caller is not sufficient evidence for removal. Prefer locally owned state
+and derived values over keeping duplicate values synchronized when the contract
+allows it. Judge the result by concrete tracing and change costs, not a fixed
+layer count or time limit.
+
+## Shared Mutable State
+
+When concurrent actors can update the same object, identify all writers and the
+invariants readers need. Before adding synchronization, ask whether the actors
+can own independent state. Separate independent write targets and combine their
+results when read; separate fields in one read-modify-write file still share a
+write target.
+
+Keep genuinely shared state together when splitting it would break atomicity or
+consistency. Enforce coordination with a mechanism appropriate to every writer:
+exclusive ownership, a lock, a transaction, or an atomic conditional update.
+Document its scope and behavior on failure or cancellation. A convention that
+workers should take turns is not enforcement. Check relevant interleavings and
+recovery paths; isolation and synchronization are design choices, not automatic
+permission to restructure unrelated code.
+
 ## Designing for testability
 
 Good interfaces make testing natural:
@@ -112,3 +142,5 @@ Good interfaces make testing natural:
 
 - **Deepening a cluster given its dependencies** — see [DEEPENING.md](DEEPENING.md): dependency categories, seam discipline, and replace-don't-layer testing.
 - **Exploring alternative interfaces** — see [DESIGN-IT-TWICE.md](DESIGN-IT-TWICE.md): spin up parallel sub-agents to design the interface several radically different ways, then compare on depth, locality, and seam placement.
+- **Settling a shape before implementing it** — see [SKETCH-FIRST.md](SKETCH-FIRST.md): write the caller's usage first, sketch the interface with unimplemented bodies, implement against it, and scrap it when the friction forms a pattern.
+- **Screening a candidate interface** — see [DESIGN-RED-FLAGS.md](DESIGN-RED-FLAGS.md): shallow modules, information leakage, temporal decomposition, pass-throughs, split ownership, two ways to do one task, importable internals, and hand-synced lists.

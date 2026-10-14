@@ -5,7 +5,9 @@ description: Test-driven development. Use when the user wants to build features 
 
 # Test-Driven Development
 
-TDD is the red → green loop. This skill is the reference that makes that loop produce tests worth keeping: what a good test is, where tests go, the anti-patterns, and the rules of the loop. Every section applies on every cycle — consult them before and during the loop, not after.
+TDD is the red -> green -> refactor loop: establish missing behavior, implement
+it, then improve the design while keeping that behavior intact. Use the testing
+guidance below throughout the loop, not only at final review.
 
 When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and interface vocabulary match the project's domain language, and respect ADRs in the area you're touching.
 
@@ -33,6 +35,29 @@ When the shape of that interface is itself in question — how deep the module i
 
 ## Rules of the loop
 
-- **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
-- **One slice at a time.** One seam, one test, one minimal implementation per cycle.
-- **Refactoring is not part of the loop.** It belongs to the review stage (see the `code-review` skill), not the red → green implementation cycle.
+- **Discover the checks.** Use the repository's test runner, wrappers, and CI
+  configuration. Identify a focused command for the current slice and broader
+  checks appropriate to its impact; do not assume a language or test command.
+- **Red.** Write and run a test for the next missing behavior. Confirm it fails
+  for the intended reason, not unrelated setup or infrastructure problems. For
+  a bug fix, it must reproduce the reported defect. If it already passes,
+  investigate whether the behavior exists or the test misses the case before
+  adding implementation.
+- **Green.** Add only enough implementation to satisfy that behavior and run
+  the focused checks again. Preserve existing assertions and gates rather than
+  weakening them to reach green. Do not anticipate unrelated features.
+- **Refactor.** With tests green, make small, behavior-preserving improvements
+  to the code just exercised when they remove real complexity. Preserve public
+  contracts, error behavior, and relevant side-effect ordering. Re-run focused
+  checks after each coherent change. Test setup may need adjustment, but the
+  behavioral assertions must remain meaningful. Skip this step when no useful
+  improvement is evident; green tests are evidence, not proof of equivalence.
+- **One slice at a time.** Complete the cycle for one behavior before adding
+  the next. If refactoring breaks a check, repair or undo only your affected
+  edits before proceeding; preserve unrelated work. Broader redesign belongs
+  in a separately scoped task, not an expanding cleanup pass.
+- **Verify and review.** Run broader relevant checks before completion and
+  report actual outcomes, skipped checks, and limitations. If tests cannot run,
+  do not claim an observed red/green cycle. Code review assesses the resulting
+  candidate separately; it does not replace in-cycle refactoring or authorize
+  edits, commits, or publication.

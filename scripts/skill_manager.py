@@ -22,6 +22,12 @@ SKILLS = ROOT / "skills"
 LOCKFILE = ROOT / "skill-sources.json"
 CACHE = ROOT / ".cache" / "skill-sources"
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+# Skills stay portable across harnesses: no Cursor paths, task-tool
+# parameters, or pinned model names.
+COUPLING_PATTERN = re.compile(
+    r"\.cursor/|\.mdc\b|cursor-team-kit|agent-transcripts|subagent_type|run_in_background"
+    r"|\b(?:grok|gpt|claude-(?:opus|sonnet|haiku))-\d"
+)
 FETCHED_REPOSITORIES: set[str] = set()
 
 
@@ -189,6 +195,21 @@ def frontmatter_name(skill_file: Path) -> str | None:
     return match.group(1) if match else None
 
 
+def coupling_errors(skill: Path) -> list[str]:
+    errors = []
+    for item in sorted(skill.rglob("*")):
+        if item.name == "THIRD_PARTY_NOTICES.md" or item.suffix not in {".md", ".yaml", ".sh"}:
+            continue
+        if not item.is_file():
+            continue
+        for number, line in enumerate(item.read_text(errors="replace").splitlines(), 1):
+            match = COUPLING_PATTERN.search(line)
+            if match:
+                location = item.relative_to(SKILLS).as_posix()
+                errors.append(f"{location}:{number}: harness-specific {match.group(0)!r}")
+    return errors
+
+
 def command_import(args: argparse.Namespace) -> None:
     repository, url_ref, url_path = parse_github_url(args.url)
     ref = args.ref or url_ref or default_ref(repository)
@@ -307,6 +328,7 @@ def command_check(args: argparse.Namespace) -> None:
         declared_name = frontmatter_name(skill_file)
         if declared_name != name:
             errors.append(f"{name}: frontmatter name is {declared_name!r}")
+        errors.extend(coupling_errors(path))
     for name, record in sorted(data["skills"].items()):
         errors.extend(validate_record(name, record))
         if name not in directories:

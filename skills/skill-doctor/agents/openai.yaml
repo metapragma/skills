@@ -1,0 +1,5 @@
+interface:
+  display_name: "Skill Doctor"
+  short_description: "Diagnose skill gaps across agent sessions"
+policy:
+  allow_implicit_invocation: false

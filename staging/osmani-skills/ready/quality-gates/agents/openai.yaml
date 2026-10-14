@@ -1,0 +1,5 @@
+interface:
+  display_name: "Quality Gates"
+  short_description: "Set up and verify project quality gates"
+policy:
+  allow_implicit_invocation: false
