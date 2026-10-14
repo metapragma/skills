@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pragma-mode wiring map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Layout: a signal-box wiring map. Four columns read left to right (you type, playbooks, skills, principles); one selected node lights its wires. */
+  :root {
+    --paper: #f6f7f9; --panel: #ffffff; --ink: #1b2230; --muted: #5d6677; --rule: #d5dae3; --wire: #c3cad6;
+    --signal: #2456c7; --signal-wash: #e7eefc;
+    --lamp: #b0600f; --lamp-wash: #fbefe1;
+    --go: #2d6a3a; --go-wash: #e6f2e8;
+    --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+    --body: "IBM Plex Sans", "Helvetica Neue", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #141821; --panel: #1c2230; --ink: #e6e9ef; --muted: #9aa3b4; --rule: #333c4e; --wire: #3d4659;
+      --signal: #8fb0f5; --signal-wash: #1e2b48;
+      --lamp: #f1b67a; --lamp-wash: #3a2816;
+      --go: #9fd3a8; --go-wash: #1c3323;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #141821; --panel: #1c2230; --ink: #e6e9ef; --muted: #9aa3b4; --rule: #333c4e; --wire: #3d4659;
+    --signal: #8fb0f5; --signal-wash: #1e2b48;
+    --lamp: #f1b67a; --lamp-wash: #3a2816;
+    --go: #9fd3a8; --go-wash: #1c3323;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font: 15px/1.6 var(--body); padding-inline: 20px; }
+  .wrap { max-width: 1140px; margin: 0 auto; padding-block: 28px 48px; display: grid; gap: 20px; }
+  header { display: grid; gap: 6px; }
+  h1 { font: 700 30px/1.1 var(--display); letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
+  .lede { color: var(--muted); margin: 0; max-width: 68ch; }
+  .meta { font: 400 12px/1.5 var(--mono); color: var(--muted); }
+
+  .detail { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 18px; min-height: 172px; }
+  .kind { font: 600 11px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .dname { font: 600 19px/1.3 var(--mono); margin: 6px 0 6px; overflow-wrap: anywhere; }
+  .ddesc { margin: 0; color: var(--muted); font-size: 14px; max-width: 60ch; }
+  .lists { display: grid; gap: 12px; align-content: start; }
+  .lhead { font: 600 12px/1 var(--body); margin-bottom: 6px; display: flex; gap: 8px; align-items: center; }
+  .swatch { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font: 400 12px/1.2 var(--mono); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--rule);
+    background: var(--paper); color: var(--ink); cursor: pointer; }
+  .chip:hover { border-color: var(--muted); }
+  .chip.out { border-color: var(--signal); color: var(--signal); }
+  .chip.in { border-color: var(--lamp); color: var(--lamp); }
+  .none { font-size: 13px; color: var(--muted); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; font-size: 13px; color: var(--muted); }
+  .controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .box { width: 14px; height: 10px; border-radius: 3px; border: 1px solid var(--rule); background: var(--panel); display: inline-block; }
+  .box.ref { background: var(--lamp-wash); border-color: transparent; }
+  .box.entry { background: var(--signal-wash); border-color: var(--signal); }
+  .box.leaf { background: var(--go-wash); border-color: transparent; }
+
+  .map { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; overflow-x: auto; padding: 14px 10px 10px; }
+  .map svg { display: block; width: 1100px; max-width: none; height: auto; }
+  .colhead { font: 600 11px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }
+  .grouphead { font: 400 10.5px var(--body); fill: var(--muted); }
+  .wire { fill: none; stroke: var(--wire); stroke-width: 1; opacity: 0.55; transition: opacity .15s, stroke .15s; }
+  .wire.out { stroke: var(--signal); stroke-width: 1.6; opacity: 1; }
+  .wire.in { stroke: var(--lamp); stroke-width: 1.6; opacity: 1; }
+  .dim .wire:not(.out):not(.in) { opacity: 0.12; }
+  .node { cursor: pointer; transition: opacity .15s; }
+  .node rect { fill: var(--panel); stroke: var(--rule); stroke-width: 1; }
+  .node text { font: 400 11.5px var(--body); fill: var(--ink); }
+  .node.entry rect { fill: var(--signal-wash); stroke: var(--signal); }
+  .node.entry text { fill: var(--signal); font-weight: 600; }
+  .node.ref rect { fill: var(--lamp-wash); stroke: transparent; }
+  .node.ref text { fill: var(--lamp); }
+  .node.leaf rect { fill: var(--go-wash); stroke: transparent; }
+  .node.leaf text { fill: var(--go); }
+  .node:hover rect { stroke: var(--muted); }
+  .node.sel rect { stroke: var(--ink); stroke-width: 2; }
+  .node.out rect { stroke: var(--signal); stroke-width: 1.6; }
+  .node.in rect { stroke: var(--lamp); stroke-width: 1.6; }
+  .dim .node:not(.sel):not(.out):not(.in) { opacity: 0.32; }
+  .node:focus { outline: none; }
+  .node:focus-visible rect { stroke: var(--signal); stroke-width: 2.5; }
+  .note { font-size: 13px; color: var(--muted); max-width: 80ch; margin: 0; }
+  .note code { font-family: var(--mono); font-size: 0.9em; }
+  @media (max-width: 760px) {
+    .detail { grid-template-columns: minmax(0, 1fr); }
+    h1 { font-size: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .wire, .node { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>pragma-mode wiring map</h1>
+    <p class="lede">Every skill in this repo, the twelve pragma-mode playbooks, its 23 principles and the decision log, and which ones each file tells the agent to use. Click a node to light up its wires. Blue goes to what it calls, amber comes from what calls it.</p>
+    <div class="meta">metapragma skills/ · working tree on 2026-10-14, uncommitted · <span id="count"></span></div>
+  </header>
+
+  <section class="detail" aria-live="polite">
+    <div>
+      <div class="kind" id="dkind"></div>
+      <div class="dname" id="dname"></div>
+      <p class="ddesc" id="ddesc"></p>
+    </div>
+    <div class="lists">
+      <div><div class="lhead"><span class="swatch" style="background:var(--signal)"></span><span id="outhead"></span></div><div class="chips" id="outs"></div></div>
+      <div><div class="lhead"><span class="swatch" style="background:var(--lamp)"></span><span id="inhead"></span></div><div class="chips" id="ins"></div></div>
+    </div>
+  </section>
+
+  <div class="controls">
+    <label for="focus-toggle"><input type="checkbox" id="focus-toggle" checked> Fade everything not connected</label>
+    <div class="legend">
+      <span><i class="box entry"></i>Entry point</span>
+      <span><i class="box"></i>Skill, playbook or principle</span>
+      <span><i class="box leaf"></i>Leaf: calls nothing else</span>
+      <span><i class="box ref"></i>Reference file</span>
+    </div>
+  </div>
+
+  <div class="map"><svg id="svg" role="img" aria-label="Dependency graph of pragma-mode playbooks, principles and this repo's skills"></svg></div>
+
+  <p class="note">How this was built: each wire is a real reference in the files, either a markdown link that resolves to another skill, playbook, principle or the decision log, or a <code>/name</code>, <code>`name`</code> or "name skill" mention. A skill's wires include its own reference files. A wire means one file tells the agent to use another; it's a map of instructions, not a trace of a real run. A leaf is a skill or principle with no outgoing wires. The column groupings are mine.</p>
+</div>
+
+<script>
+const DATA = {"nodes":{"api-and-interface-design":"Design or review API and interface contracts: requests, responses, errors, authorization, pagination, retries, and compatibility. Use for new or changed endpoints and consumer-facing module contracts, not general architecture or routine internal refactors.","benchmark-checklist":"Vet a performance measurement before you report or act on it. Use when you run a benchmark, or report a speedup or regression you measured.","blast-radius":"Find what a change could break beyond its diff, and prove the fact it is safe because of by running real code.","challenge-the-design":"Re-evaluate an existing feature or architecture proposal from the codebase-wide, long-term perspective; develop a stronger design, review it adversarially but fairly, and synthesize one final recommendation. Use after a Grill Me or planning session, when a proposal feels like a local optimum or averaged compromise, when asked for the best bigger-picture solution for long-term health, maintainability, or quality, or when asked to challenge and synthesize a proposed design before implementation.","code-review":"Review a branch, commit, staged candidate, or working changes for correctness and risk, standards, and specification compliance. Use for code review or review since a fixed point.","codebase-design":"Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.","diagnosing-bugs":"Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow.","domain-modeling":"Build and sharpen a project's domain model. Use when discussing codebase terminology, editing its domain glossary, or recording or editing an ADR.","drill":"Build a clearer understanding through concrete explanations, revealing examples, and tests of when an idea applies. Use when the user asks for questions to think through, invokes \"drill\", \"mental model\", or \"interrogate\" mode, or wants to reason through an idea interactively. Do not trigger merely because the topic is complex or the user asks for a direct explanation.","frontend-integration-handoff":"Create a standalone, implementation-ready backend-to-frontend handoff document for a completed or in-progress feature. Use after adding or changing APIs, DTOs, schemas, fields, validation, permissions, workflows, or other backend behavior that frontend developers must integrate, especially when asked to document a feature in docs/handoff or explain everything frontend needs without reading the backend code.","grilling":"Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.","handoff":"Summarize the current task, work state, and verification in a handoff document another agent can safely resume.","how":"Explain how a subsystem or piece of code works, deep enough for an engineer to start working in it.","implement":"Implement a piece of work based on a spec or set of tickets.","improve-codebase-architecture":"Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.","pragma-mode":"Run a task through a matched playbook, with house rules and engineering principles applied at every step.","prototype":"Build a throwaway prototype or small executable experiment to answer a design question. Use for exploring UI or state models, or settling uncertain behavior or timing through observation.","research":"Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.","retro":"Review a coding session and recommend evidence-backed improvements to the agent's environment.","setup":"Configure this repo for the engineering skills: set up its issue tracker, triage label vocabulary, and domain doc layout. Run explicitly before workflows that need this configuration.","setup-info":"Ask which skill or flow fits your situation. A router over the skills in this repo.","show-me":"Help the user understand the current topic visually with concise diagrams, code-shape sketches, and focused HTML artifacts.","skill-doctor":"Diagnose instruction gaps across local agent sessions and propose evidence-backed skill changes. Use when the user explicitly requests a skill audit or multi-session retrospective.","tdd":"Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests.","teach":"Teach the user a new skill or concept, within this workspace.","technical-writing":"Write or revise human-facing technical documentation for its audience and purpose, preserving factual accuracy and useful detail.","to-questionnaire":"Turn a decision you can't fully answer into a questionnaire for someone else to fill in.","to-spec":"Turn the current conversation into a spec and publish it to the project issue tracker \u2014 no interview, just synthesis of what you've already discussed.","to-tickets":"Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker \u2014 edges as text in one file per ticket locally, or native blocking links on a real tracker.","triage":"Move issues and external PRs through a state machine of triage roles \u2014 categorise, verify, grill if needed, and write agent-ready briefs.","verification":"Verify a change by running the project's real checks and reporting evidence, or set up and repair the verification paths an agent needs in a codebase. Use when finishing a change, when asked to prove something works, or when asked to set up or audit verification.","wait-what":"Stop. That last message did not land \u2014 re-pitch it.","wayfinder":"Plan a huge chunk of work \u2014 more than one agent session can hold \u2014 as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.","why":"Investigate the historical rationale behind code or a design decision, separating documented intent from inference.","wizard":"Generate an interactive bash wizard that walks a human through steps only they can perform. Use when provisioning infrastructure, setting up credentials or CI secrets, walking an unfamiliar third-party dashboard, or running a one-off migration or cutover. Don't invoke this for steps the agent can perform itself.","writing-for-agents":"Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.","pb:investigation":"A read-only question: how does X work, why is Y this way, are we sure about Z, should we do X or Y","pb:bug-fix":"A reported defect to reproduce, root-cause, and fix","pb:feature":"New or changed behavior that fits in one session","pb:feature-large":"New or changed behavior that spans sessions","pb:refactoring":"Change structure without changing behavior","pb:perf":"A measured slowness to fix","pb:hillclimb":"Sustained improvement of one metric against a target","pb:forensics":"Diagnose a runtime symptom (leak, spin, stall, crash) from a live process or a captured artifact","pb:prototype":"A throwaway sketch to settle a design or behavior question","pb:skill-change":"Write or edit a skill, playbook, or agent instruction file","pb:pickup-and-pause":"Pause work cleanly, or resume a previous session's work","pb:committing":"Commit the work, or open a pull request","principle-laziness-protocol":"Sizing a diff, or tempted to add layers or thread a new signal. Prefer deletion and the smallest change that solves the problem.","principle-foundational-thinking":"Before writing logic: core types, scaffold-versus-feature order, what concurrent actors share.","principle-redesign-from-first-principles":"Integrating a new requirement. Redesign as if it had been there from the start.","principle-attack-the-premise":"Two or more fixes that share one premise failed the same check. Question the premise before the next fix.","principle-subtract-before-you-add":"Sequencing an addition, refactor, or rewrite. Remove dead weight first.","principle-minimize-reader-load":"Code that is hard to trace. Count layers and hidden state; collapse one-caller wrappers.","principle-outcome-oriented-execution":"A planned migration with declared phase boundaries. Converge on the target instead of keeping throwaway compatibility.","principle-experience-first":"Scope or UX tradeoffs. Choose the consumer's experience over implementation convenience.","principle-exhaust-the-design-space":"A decision with no precedent. Build two or three real alternatives before committing.","principle-build-the-lever":"Any non-trivial work. Build the script or codemod that does or proves it.","principle-model-the-domain":"Stateful or branching logic. Encode the domain in a structure, not scattered conditionals.","principle-boundary-discipline":"Validation, error handling, framework adapters. Guard at boundaries; keep business logic pure.","principle-type-system-discipline":"Designing types or signatures. Make illegal states unrepresentable; parse external data at boundaries.","principle-make-operations-idempotent":"Commands, jobs, or loops that run amid crashes and retries. Converge to the same end state.","principle-migrate-callers-then-delete-legacy-apis":"A new internal API while old callers exist. Migrate and delete in one pass; consumer-facing contracts are excluded.","principle-separate-before-serializing-shared-state":"Concurrent actors might write the same file, key, branch, or row. Remove the sharing first.","principle-prove-it-works":"Before declaring done. Check the real artifact, not a proxy.","principle-fix-root-causes":"Debugging. Reproduce first and ask why until you reach the cause.","principle-sequence-verifiable-units":"Multi-step work and commit order. Each unit ends in a check before the next starts.","principle-test-behavior-not-implementation":"Writing, changing, or keeping a test. It must fail if every imported function returned `undefined`.","principle-explain-the-number":"Before trusting or reporting a measured number. Find its limiter and rule out what else it measured.","principle-guard-the-context-window":"Large outputs, long files, fan-out. Keep summaries in the main thread.","principle-encode-lessons-in-structure":"You are writing the same instruction a second time. Make it a check, type, or script instead.","ref:decision-log":"A TSV trail with one row per decision, plus the log.sh helper. Long and multi-step runs keep one."},"edges":{"api-and-interface-design":[],"benchmark-checklist":[],"blast-radius":[],"challenge-the-design":[],"code-review":["setup"],"codebase-design":[],"diagnosing-bugs":["improve-codebase-architecture"],"domain-modeling":[],"drill":[],"frontend-integration-handoff":[],"grilling":[],"handoff":[],"how":[],"implement":["code-review","tdd"],"improve-codebase-architecture":["codebase-design","domain-modeling","grilling"],"pragma-mode":["blast-radius","pb:bug-fix","pb:committing","pb:feature","pb:feature-large","pb:forensics","pb:hillclimb","pb:investigation","pb:perf","pb:pickup-and-pause","pb:prototype","pb:refactoring","pb:skill-change","principle-attack-the-premise","principle-boundary-discipline","principle-build-the-lever","principle-encode-lessons-in-structure","principle-exhaust-the-design-space","principle-experience-first","principle-explain-the-number","principle-fix-root-causes","principle-foundational-thinking","principle-guard-the-context-window","principle-laziness-protocol","principle-make-operations-idempotent","principle-migrate-callers-then-delete-legacy-apis","principle-minimize-reader-load","principle-model-the-domain","principle-outcome-oriented-execution","principle-prove-it-works","principle-redesign-from-first-principles","principle-separate-before-serializing-shared-state","principle-sequence-verifiable-units","principle-subtract-before-you-add","principle-test-behavior-not-implementation","principle-type-system-discipline","prototype","ref:decision-log","triage","verification","wayfinder"],"prototype":[],"research":[],"retro":[],"setup":["grilling","prototype","research","to-spec","to-tickets","triage","wayfinder"],"setup-info":["api-and-interface-design","benchmark-checklist","blast-radius","challenge-the-design","code-review","codebase-design","diagnosing-bugs","domain-modeling","drill","frontend-integration-handoff","grilling","handoff","how","implement","improve-codebase-architecture","pragma-mode","prototype","research","retro","setup","show-me","skill-doctor","tdd","teach","technical-writing","to-questionnaire","to-spec","to-tickets","triage","verification","wait-what","wayfinder","why","wizard","writing-for-agents"],"show-me":[],"skill-doctor":[],"tdd":["codebase-design"],"teach":[],"technical-writing":[],"to-questionnaire":[],"to-spec":["setup"],"to-tickets":[],"triage":["domain-modeling","grilling","setup"],"verification":["retro","skill-doctor"],"wait-what":[],"wayfinder":["domain-modeling","grilling","prototype","research","setup"],"why":[],"wizard":[],"writing-for-agents":[],"pb:bug-fix":["code-review","codebase-design","diagnosing-bugs","how","pb:committing","principle-attack-the-premise","tdd","verification","why"],"pb:committing":["code-review","principle-sequence-verifiable-units","technical-writing"],"pb:feature-large":["domain-modeling","grilling","handoff","pb:feature","pragma-mode","prototype","to-spec","to-tickets","wayfinder"],"pb:feature":["codebase-design","domain-modeling","grilling","how","implement","pb:committing","pb:feature-large","pb:prototype","pragma-mode","principle-model-the-domain","principle-separate-before-serializing-shared-state","verification"],"pb:forensics":["pb:bug-fix","pb:perf","principle-guard-the-context-window","verification"],"pb:hillclimb":["benchmark-checklist","code-review","how","pb:committing","pb:perf","principle-build-the-lever","ref:decision-log"],"pb:investigation":["how","research","why"],"pb:perf":["benchmark-checklist","code-review","codebase-design","diagnosing-bugs","how","pb:committing","pb:hillclimb","principle-sequence-verifiable-units","verification"],"pb:pickup-and-pause":["handoff","pragma-mode","principle-prove-it-works","ref:decision-log"],"pb:prototype":["pb:feature","principle-exhaust-the-design-space","prototype"],"pb:refactoring":["code-review","codebase-design","how","implement","pb:committing","pragma-mode","principle-migrate-callers-then-delete-legacy-apis","principle-minimize-reader-load","principle-model-the-domain","principle-redesign-from-first-principles","principle-subtract-before-you-add","verification"],"pb:skill-change":["pb:committing","principle-explain-the-number","skill-doctor","writing-for-agents"],"principle-attack-the-premise":["principle-build-the-lever","principle-fix-root-causes","principle-laziness-protocol","principle-redesign-from-first-principles"],"principle-boundary-discipline":[],"principle-build-the-lever":["principle-encode-lessons-in-structure","principle-laziness-protocol","principle-prove-it-works"],"principle-encode-lessons-in-structure":[],"principle-exhaust-the-design-space":["codebase-design"],"principle-experience-first":[],"principle-explain-the-number":["benchmark-checklist","principle-prove-it-works"],"principle-fix-root-causes":[],"principle-foundational-thinking":[],"principle-guard-the-context-window":[],"principle-laziness-protocol":[],"principle-make-operations-idempotent":[],"principle-migrate-callers-then-delete-legacy-apis":["api-and-interface-design"],"principle-minimize-reader-load":["principle-guard-the-context-window"],"principle-model-the-domain":[],"principle-outcome-oriented-execution":[],"principle-prove-it-works":["verification"],"principle-redesign-from-first-principles":[],"principle-separate-before-serializing-shared-state":[],"principle-sequence-verifiable-units":["principle-build-the-lever","principle-prove-it-works"],"principle-subtract-before-you-add":[],"principle-test-behavior-not-implementation":[],"principle-type-system-discipline":["principle-boundary-discipline","principle-encode-lessons-in-structure"],"ref:decision-log":[]}};
+
+const COLUMNS = [
+  { title: 'You type', x: 0, w: 200, groups: [
+    ['Entry points', ['pragma-mode', 'setup-info', 'setup']],
+    ['Routed straight from pragma-mode', ['triage', 'blast-radius']],
+    ['Skills you call directly', ['challenge-the-design', 'api-and-interface-design', 'improve-codebase-architecture', 'frontend-integration-handoff', 'retro', 'show-me', 'teach', 'drill', 'wait-what', 'to-questionnaire', 'wizard']],
+  ]},
+  { title: 'Playbooks', x: 290, w: 190, groups: [
+    ['Understand', ['pb:investigation', 'pb:forensics']],
+    ['Build', ['pb:feature', 'pb:feature-large', 'pb:bug-fix', 'pb:refactoring', 'pb:perf', 'pb:hillclimb', 'pb:prototype']],
+    ['Skills', ['pb:skill-change']],
+    ['Boundaries and shipping', ['pb:pickup-and-pause', 'pb:committing']],
+  ]},
+  { title: 'Skills the steps call', x: 570, w: 190, groups: [
+    ['Understand', ['how', 'why', 'research']],
+    ['Shape the work', ['grilling', 'domain-modeling', 'prototype', 'codebase-design']],
+    ['Plan across sessions', ['to-spec', 'to-tickets', 'wayfinder', 'handoff']],
+    ['Build and check', ['implement', 'tdd', 'diagnosing-bugs', 'verification', 'benchmark-checklist', 'code-review']],
+    ['Write and maintain skills', ['technical-writing', 'writing-for-agents', 'skill-doctor']],
+    ['Reference', ['ref:decision-log']],
+  ]},
+  { title: 'Principles', x: 850, w: 250, groups: [
+    ['Core', ['laziness-protocol', 'foundational-thinking', 'redesign-from-first-principles', 'attack-the-premise', 'subtract-before-you-add', 'minimize-reader-load', 'outcome-oriented-execution', 'experience-first', 'exhaust-the-design-space', 'build-the-lever'].map(n => 'principle-' + n)],
+    ['Architecture', ['model-the-domain', 'boundary-discipline', 'type-system-discipline', 'make-operations-idempotent', 'migrate-callers-then-delete-legacy-apis', 'separate-before-serializing-shared-state'].map(n => 'principle-' + n)],
+    ['Verification', ['prove-it-works', 'fix-root-causes', 'sequence-verifiable-units', 'test-behavior-not-implementation', 'explain-the-number'].map(n => 'principle-' + n)],
+    ['Delegation and meta', ['guard-the-context-window', 'encode-lessons-in-structure'].map(n => 'principle-' + n)],
+  ]},
+];
+const ENTRY = new Set(['pragma-mode', 'setup-info', 'setup']);
+const ROW = 23, NODE_H = 18, GROUP_GAP = 26, TOP = 34;
+const NS = 'http://www.w3.org/2000/svg';
+
+const label = id => id.replace(/^pb:|^ref:|^principle-/, '');
+const isLeaf = id => !id.startsWith('pb:') && !id.startsWith('ref:') && !ENTRY.has(id) && !(DATA.edges[id] || []).length;
+function kindOf(id) {
+  if (id.startsWith('pb:')) return 'Playbook';
+  if (id.startsWith('ref:')) return 'Reference file';
+  if (id.startsWith('principle-')) return isLeaf(id) ? 'Principle, leaf' : 'Principle';
+  if (ENTRY.has(id)) return 'Entry point';
+  return isLeaf(id) ? 'Skill, leaf' : 'Skill';
+}
+
+const pos = {};
+let height = 0;
+const svg = document.getElementById('svg');
+const el = (tag, attrs, parent) => {
+  const node = document.createElementNS(NS, tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  if (parent) parent.append(node);
+  return node;
+};
+
+const wiresLayer = el('g', {}, svg);
+const nodesLayer = el('g', {}, svg);
+COLUMNS.forEach((col, colIndex) => {
+  el('text', { x: col.x + 4, y: 12, class: 'colhead' }, nodesLayer).textContent = col.title;
+  let y = TOP;
+  col.groups.forEach(([groupName, ids]) => {
+    el('text', { x: col.x + 4, y: y + 6, class: 'grouphead' }, nodesLayer).textContent = groupName;
+    y += 14;
+    ids.forEach(id => {
+      if (!(id in DATA.nodes)) return;
+      pos[id] = { x: col.x, y, w: col.w, col: colIndex };
+      y += ROW;
+    });
+    y += GROUP_GAP - 14;
+  });
+  height = Math.max(height, y);
+});
+svg.setAttribute('viewBox', `0 0 1100 ${height}`);
+
+const wires = [];
+for (const [source, targets] of Object.entries(DATA.edges)) {
+  for (const target of targets) {
+    const a = pos[source], b = pos[target];
+    if (!a || !b) continue;
+    const ay = a.y + NODE_H / 2, by = b.y + NODE_H / 2;
+    let d;
+    if (b.col > a.col) {
+      const x1 = a.x + a.w, x2 = b.x, mid = (x1 + x2) / 2;
+      d = `M${x1},${ay} C${mid},${ay} ${mid},${by} ${x2},${by}`;
+    } else if (b.col < a.col) {
+      const x1 = a.x, x2 = b.x + b.w, mid = (x1 + x2) / 2;
+      d = `M${x1},${ay} C${mid},${ay} ${mid},${by} ${x2},${by}`;
+    } else {
+      const x = a.x + a.w, bulge = Math.min(70, 18 + Math.abs(by - ay) * 0.25);
+      d = `M${x},${ay} C${x + bulge},${ay} ${x + bulge},${by} ${x},${by}`;
+    }
+    wires.push({ source, target, path: el('path', { d, class: 'wire' }, wiresLayer) });
+  }
+}
+
+const nodeEls = {};
+for (const [id, p] of Object.entries(pos)) {
+  const kind = kindOf(id);
+  const cls = ['node', ENTRY.has(id) && 'entry', id.startsWith('ref:') && 'ref', isLeaf(id) && 'leaf'].filter(Boolean).join(' ');
+  const g = el('g', { class: cls, tabindex: 0, role: 'button', 'aria-label': `${kind} ${label(id)}` }, nodesLayer);
+  el('rect', { x: p.x, y: p.y, width: p.w, height: NODE_H, rx: 4 }, g);
+  el('text', { x: p.x + 8, y: p.y + 12.5 }, g).textContent = label(id);
+  g.addEventListener('click', () => select(id));
+  g.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(id); }
+  });
+  nodeEls[id] = g;
+}
+
+const incoming = {};
+for (const [source, targets] of Object.entries(DATA.edges)) {
+  for (const target of targets) (incoming[target] ||= []).push(source);
+}
+const leafCount = Object.keys(pos).filter(isLeaf).length;
+document.getElementById('count').textContent =
+  `${Object.keys(pos).length} nodes · ${wires.length} wires · ${leafCount} leaves`;
+
+function chip(id, cls) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `chip ${cls}`;
+  button.textContent = label(id);
+  button.title = kindOf(id);
+  button.onclick = () => select(id);
+  return button;
+}
+
+function fill(listId, headId, ids, cls, verb) {
+  const list = document.getElementById(listId);
+  list.replaceChildren();
+  document.getElementById(headId).textContent = `${verb} (${ids.length})`;
+  if (!ids.length) {
+    const none = document.createElement('span');
+    none.className = 'none';
+    none.textContent = 'None';
+    list.append(none);
+  }
+  ids.forEach(id => list.append(chip(id, cls)));
+}
+
+function select(id) {
+  const outs = (DATA.edges[id] || []).filter(t => pos[t]);
+  const ins = (incoming[id] || []).filter(s => pos[s]);
+  for (const [nodeId, g] of Object.entries(nodeEls)) {
+    g.classList.toggle('sel', nodeId === id);
+    g.classList.toggle('out', outs.includes(nodeId));
+    g.classList.toggle('in', ins.includes(nodeId) && !outs.includes(nodeId));
+  }
+  for (const wire of wires) {
+    wire.path.classList.toggle('out', wire.source === id);
+    wire.path.classList.toggle('in', wire.target === id);
+    if (wire.source === id || wire.target === id) wiresLayer.append(wire.path);
+  }
+  document.getElementById('dkind').textContent = kindOf(id);
+  document.getElementById('dname').textContent = label(id);
+  document.getElementById('ddesc').textContent = DATA.nodes[id] || '';
+  fill('outs', 'outhead', outs, 'out', 'Tells the agent to use');
+  fill('ins', 'inhead', ins, 'in', 'Used by');
+}
+
+const focusToggle = document.getElementById('focus-toggle');
+const applyFocus = () => svg.classList.toggle('dim', focusToggle.checked);
+focusToggle.addEventListener('change', applyFocus);
+applyFocus();
+select('pb:bug-fix');
+</script>
+</body>
+</html>

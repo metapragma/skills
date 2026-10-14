@@ -8,6 +8,6 @@ you want one step on its own.
   as bug fix, feature, refactoring, or perf.
 - [Principles](skills/pragma-mode/principles/): one file per engineering
   principle the playbooks apply.
-- [Wiring map](https://raw.githack.com/metapragma/skills/main/docs/wiring-map.html):
+- [Wiring map](https://metapragma.github.io/skills/wiring-map.html):
   an interactive graph of which skills, playbooks, and principles each file
   calls. The page is [docs/wiring-map.html](docs/wiring-map.html).
