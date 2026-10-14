@@ -1,4 +1,4 @@
-Personal collection of local and imported agent skills
+Custom workflow. Some ideas influenced by from Matt Pocock and Addy Osmani as well as pstack.
 
 Start most work with `/pragma-mode <goal>`. It matches the task to a playbook
 and runs the skills below as its steps. `/setup-info` recommends a skill when
@@ -8,6 +8,6 @@ you want one step on its own.
   as bug fix, feature, refactoring, or perf.
 - [Principles](skills/pragma-mode/principles/): one file per engineering
   principle the playbooks apply.
-- Wiring map: an interactive graph of which skills, playbooks, and principles
-  each file calls, at <https://metapragma.github.io/skills/wiring-map.html>.
-  Its source is [docs/wiring-map.html](docs/wiring-map.html).
+- An [interactive graph](https://metapragma.github.io/skills/wiring-map.html)
+ of which skills, playbooks, and principles
+  each file calls.
