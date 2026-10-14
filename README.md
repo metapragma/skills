@@ -1,4 +1,4 @@
-Custom workflow. Some ideas influenced by from Matt Pocock and Addy Osmani as well as pstack.
+Custom workflow. Some ideas influenced by Matt Pocock and Addy Osmani as well as pstack.
 
 Start most work with `/pragma-mode <goal>`. It matches the task to a playbook
 and runs the skills below as its steps. `/setup-info` recommends a skill when
